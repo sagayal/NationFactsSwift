@@ -17,7 +17,6 @@ class ListViewModelObservables {
   let isRefreshing = Observable<Bool>(value: false)
   let isLoading = Observable<Bool>(value: false)
   let isServiceFailed = Observable<Bool>(value: false)
-  let isTableViewHidden = Observable<Bool>(value: false)
   let sectionViewModels = Observable<SectionViewModel>(value: SectionViewModel(rowViewModels: []))
   var serviceError: NSError?
 }
@@ -41,11 +40,9 @@ class ListViewModel: NSObject, CellImageDownloaderDelegate {
   func start() {
     self.observables.isLoading.value = true
     observables.isServiceFailed.value = false
-    observables.isTableViewHidden.value = true
     observables.title.value = Constants.loadingText
     factsQueryService.getFactsList(from: ConfigurationManager.shared.environment.urlEndPoint,
                                    success: { [weak self] (factsData) in
-                                    self?.observables.isTableViewHidden.value = false
                                     self?.observables.isLoading.value = false
 
                                     guard let factsData = factsData else {

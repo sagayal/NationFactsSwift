@@ -92,10 +92,6 @@ class ListViewController: UIViewController, ListImageDownloaderDelegate {
       self?.navigationItem.titleView = self?.titleLabel
     }
 
-    observables.isTableViewHidden.addObserver { [weak self] (isHidden) in
-      self?.tableView.isHidden = isHidden
-    }
-
     observables.isServiceFailed.addObserver { [weak self] (isServiceFailed) in
       if isServiceFailed {
         self?.showServiceFailedAlert()
@@ -127,7 +123,6 @@ class ListViewController: UIViewController, ListImageDownloaderDelegate {
   deinit {
     observables.sectionViewModels.removeObserver()
     observables.title.removeObserver()
-    observables.isTableViewHidden.removeObserver()
     observables.isServiceFailed.removeObserver()
   }
 
