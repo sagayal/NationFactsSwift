@@ -146,6 +146,9 @@ class ListViewModel: NSObject, CellImageDownloaderDelegate {
 
   // MARK: Image laod/download methods
   func downloadImageFor(factCellViewModel: FactCellViewModel, at indexPath: IndexPath) {
+    guard factsQueryService.isNetworkReachable() else {
+      return
+    }
     ImageDownloadHelper.shared.startDownload(factCellViewModel: factCellViewModel, at: indexPath) {
       if ImageDownloadHelper.shared.downloader.isCancelled {
         return
@@ -186,7 +189,7 @@ class ListViewModel: NSObject, CellImageDownloaderDelegate {
         let rowViewModel = sectionViewModel.rowViewModels[indexPath.row]
         if let factCellViewModel = rowViewModel as? FactCellViewModel {
           DebugLog.print("Visible row download")
-          getImageFor(factCellViewModel: factCellViewModel, at: indexPath)
+          downloadImageFor(factCellViewModel: factCellViewModel, at: indexPath)
         }
       }
     }

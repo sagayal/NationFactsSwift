@@ -33,7 +33,7 @@ class FactsQueryServiceTests: XCTestCase {
                                     successTestExpectation.fulfill()
     },
                                    failure: { (error) in
-                                    XCTAssertNil(error, "error in response")
+                                    XCTAssertNotNil(error, "error in response")
                                     successTestExpectation.fulfill()
     })
     waitForExpectations(timeout: 30) { (error) in
@@ -48,6 +48,9 @@ class FactsQueryServiceTests: XCTestCase {
 
 // Mock service class for success test case
 class FactsQueryMockServieSuccess: FactsQueryProrocol {
+  func isNetworkReachable() -> Bool {
+    return true
+  }
 
   func getFactsList(from urlEndPoint: String,
                     success: @escaping FactsQuerySuccessHandler,
@@ -65,6 +68,9 @@ class FactsQueryMockServieSuccess: FactsQueryProrocol {
 
 // Mock service for failure test case
 class FactsQueryMockServieFailure: FactsQueryProrocol {
+  func isNetworkReachable() -> Bool {
+    return true
+  }
 
   func getFactsList(from urlEndPoint: String,
                     success: @escaping FactsQuerySuccessHandler,

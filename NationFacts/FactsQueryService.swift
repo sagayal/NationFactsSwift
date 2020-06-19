@@ -7,6 +7,7 @@
 //
 
 import Foundation
+import SystemConfiguration
 
 typealias FactsQuerySuccessHandler = (FactsData?) -> Void
 typealias FactsQueryFailureHandler = (NSError?) -> Void
@@ -15,6 +16,7 @@ protocol FactsQueryProrocol {
 
   func getFactsList(from urlEndPoint: String, success: @escaping FactsQuerySuccessHandler,
                     failure: @escaping FactsQueryFailureHandler)
+  func isNetworkReachable() -> Bool
 }
 
 class FactsQueryService: FactsQueryProrocol {
@@ -26,6 +28,12 @@ class FactsQueryService: FactsQueryProrocol {
                     failure: @escaping FactsQueryFailureHandler) {
     // cancel existing tasks before starting new get facts task
     dataTask?.cancel()
+    guard isNetworkReachable() else {
+      let error = NSError(domain: Constants.ErrorDomain.serviceError,
+                          code: 0, userInfo: nil)
+      failure(error)
+      return
+    }
 
     // Create URL from string
     guard let requestUrl = URL(string: urlEndPoint) else {
@@ -56,6 +64,7 @@ class FactsQueryService: FactsQueryProrocol {
           let error = NSError(domain: Constants.ErrorDomain.invalidData,
                               code: Constants.Status.invalidResponse, userInfo: nil)
           DebugLog.print(error)
+          failure(error)
           return
         }
         // Decode json data to FactsData model object
@@ -73,5 +82,16 @@ class FactsQueryService: FactsQueryProrocol {
     }
     // start the task
     dataTask?.resume()
+  }
+
+  func isNetworkReachable() -> Bool {
+    let urlEndPoint = ConfigurationManager.shared.environment.urlEndPoint
+    guard let reachability = SCNetworkReachabilityCreateWithName(nil, urlEndPoint) else {
+      return false
+    }
+
+    var flags = SCNetworkReachabilityFlags()
+    SCNetworkReachabilityGetFlags(reachability, &flags)
+    return flags.contains(.reachable)
   }
 }

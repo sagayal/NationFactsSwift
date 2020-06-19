@@ -16,7 +16,7 @@ import MBProgressHUD
 //
 public extension UITableViewCell {
   /// Generated cell identifier derived from class name
-  public static func cellIdentifier() -> String {
+    static func cellIdentifier() -> String {
     return String(describing: self)
   }
 }

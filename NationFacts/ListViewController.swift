@@ -82,7 +82,6 @@ class ListViewController: UIViewController, ListImageDownloaderDelegate {
 
   //bind view model with observers to react on changes made by controller
   func initBinding() {
-
     observables.sectionViewModels.addObserver(fireNow: false) { [weak self] (_) in
       self?.tableView.reloadData()
     }
@@ -100,7 +99,9 @@ class ListViewController: UIViewController, ListImageDownloaderDelegate {
 
     observables.isRefreshing.addObserver { [weak self] (isRefreshing) in
       if !isRefreshing {
-        self?.refreshControll.endRefreshing()
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + .seconds(1)) { [weak self] in
+          self?.endRefresh()
+        }
       }
     }
 
@@ -117,7 +118,7 @@ class ListViewController: UIViewController, ListImageDownloaderDelegate {
     refreshControll.tintColor = .green
     refreshControll.attributedTitle = NSAttributedString(string: Constants.refreshText)
     refreshControll.addTarget(self, action: #selector(refresh), for: UIControl.Event.valueChanged)
-    tableView.addSubview(self.refreshControll)
+    tableView.addSubview(refreshControll)
   }
 
   deinit {
@@ -142,8 +143,10 @@ class ListViewController: UIViewController, ListImageDownloaderDelegate {
   }
 
   func endRefresh() {
-    DispatchQueue.main.async {
-      self.refreshControll.endRefreshing()
+    DispatchQueue.main.async { [weak self] in
+      if let isRefreshing = self?.refreshControll.isRefreshing, isRefreshing {
+        self?.refreshControll.endRefreshing()
+      }
     }
   }
 
@@ -151,7 +154,6 @@ class ListViewController: UIViewController, ListImageDownloaderDelegate {
 
   //Service failure alert
   func showServiceFailedAlert() {
-
     let error = self.observables.serviceError
 
     var title = ""

@@ -108,7 +108,6 @@ class FactCell: UITableViewCell {
   // MARK: - Setup Constraints
 
   private func setupConstraints() {
-
     let stackView = UIStackView(arrangedSubviews: [factImageView, titleLabel, descriptionLabel])
     stackView.axis = .vertical
     stackView.distribution = .fill
